@@ -1,4 +1,4 @@
-import { createContext, useState, ReactNode } from 'react';
+import { createContext, useState, ReactNode, useEffect } from 'react';
 import challenges from '../../challenges.json';
 
 interface Challenge {
@@ -40,6 +40,14 @@ export function ChallengesProvider({ children }: ChallegesProviderProps) {
    */
   const experienceToNextLevel = Math.pow((level + 1) * 4, 2)
 
+  /**
+   * esse novo incremento do useEffect, trata-se de uma side-effect( efeito colateral )
+   */
+
+   useEffect(() => {
+    Notification.requestPermission();
+   }, []) // quando o array estiver vazio, quer dizer q esse efeito será gerado apenas 1 vez
+
   function levelUp() {
     setLevel(level + 1);
   }
@@ -49,6 +57,14 @@ export function ChallengesProvider({ children }: ChallegesProviderProps) {
     const challenge = challenges[randomChallengeIndex];
 
     setActiveChallenge(challenge);
+
+    new Audio('/notification.mp3').play();
+
+    if(Notification.permission === 'granted'){
+      new Notification('Novo desafio', {
+        body: `Valendo ${challenge.amount}xp!`
+      })
+    }
   }
 
   function resetChallenge() {
